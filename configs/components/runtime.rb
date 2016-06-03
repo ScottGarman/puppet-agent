@@ -17,6 +17,7 @@ component "runtime" do |pkg, settings, platform|
 
   if platform.is_cross_compiled?
     libdir = File.join("/opt/pl-build-tools", settings[:platform_triple], "lib")
+    libdir = File.join("/opt/pl-build-tools", settings[:platform_triple], "lib64") if platform.architecture == "s390x"
   elsif platform.is_solaris? || platform.architecture =~ /i\d86/
     libdir = "/opt/pl-build-tools/lib"
   elsif platform.architecture =~ /64/
@@ -45,16 +46,28 @@ component "runtime" do |pkg, settings, platform|
     pkg.install_file "#{settings[:tools_root]}/bin/libgdbm_compat-4.dll", "#{settings[:ruby_bindir]}/libgdbm_compat-4.dll"
     pkg.install_file "#{settings[:tools_root]}/bin/libiconv-2.dll", "#{settings[:ruby_bindir]}/libiconv-2.dll"
     pkg.install_file "#{settings[:tools_root]}/bin/libffi-6.dll", "#{settings[:ruby_bindir]}/libffi-6.dll"
-
   else
-    pkg.install_file File.join(libdir, "libstdc++.so.6.0.18"), "/opt/puppetlabs/puppet/lib/libstdc++.so.6.0.18"
-    pkg.install_file File.join(libdir, "libgcc_s.so.1"), "/opt/puppetlabs/puppet/lib/libgcc_s.so.1"
-    pkg.install_file File.join(libdir, "libssp.so.0.0.0"), "/opt/puppetlabs/puppet/lib/libssp.so.0.0.0"
+    if platform.architecture == "s390x"
+      # Really, this is for pl-gcc 5.2.0...
+      pkg.install_file File.join(libdir, "libstdc++.so.6.0.21"), "/opt/puppetlabs/puppet/lib/libstdc++.so.6.0.21"
+      pkg.install_file File.join(libdir, "libgcc_s.so.1"), "/opt/puppetlabs/puppet/lib/libgcc_s.so.1"
+      pkg.install_file File.join(libdir, "libssp.so.0.0.0"), "/opt/puppetlabs/puppet/lib/libssp.so.0.0.0"
 
-    pkg.link "/opt/puppetlabs/puppet/lib/libstdc++.so.6.0.18", "/opt/puppetlabs/puppet/lib/libstdc++.so"
-    pkg.link "/opt/puppetlabs/puppet/lib/libstdc++.so.6.0.18", "/opt/puppetlabs/puppet/lib/libstdc++.so.6"
-    pkg.link "/opt/puppetlabs/puppet/lib/libgcc_s.so.1", "/opt/puppetlabs/puppet/lib/libgcc_s.so"
-    pkg.link "/opt/puppetlabs/puppet/lib/libssp.so.0.0.0", "/opt/puppetlabs/puppet/lib/libssp.so.0"
-    pkg.link "/opt/puppetlabs/puppet/lib/libssp.so.0.0.0", "/opt/puppetlabs/puppet/lib/libssp.so"
+      pkg.link "/opt/puppetlabs/puppet/lib/libstdc++.so.6.0.21", "/opt/puppetlabs/puppet/lib/libstdc++.so"
+      pkg.link "/opt/puppetlabs/puppet/lib/libstdc++.so.6.0.21", "/opt/puppetlabs/puppet/lib/libstdc++.so.6"
+      pkg.link "/opt/puppetlabs/puppet/lib/libgcc_s.so.1", "/opt/puppetlabs/puppet/lib/libgcc_s.so"
+      pkg.link "/opt/puppetlabs/puppet/lib/libssp.so.0.0.0", "/opt/puppetlabs/puppet/lib/libssp.so.0"
+      pkg.link "/opt/puppetlabs/puppet/lib/libssp.so.0.0.0", "/opt/puppetlabs/puppet/lib/libssp.so"
+    else
+      pkg.install_file File.join(libdir, "libstdc++.so.6.0.18"), "/opt/puppetlabs/puppet/lib/libstdc++.so.6.0.18"
+      pkg.install_file File.join(libdir, "libgcc_s.so.1"), "/opt/puppetlabs/puppet/lib/libgcc_s.so.1"
+      pkg.install_file File.join(libdir, "libssp.so.0.0.0"), "/opt/puppetlabs/puppet/lib/libssp.so.0.0.0"
+
+      pkg.link "/opt/puppetlabs/puppet/lib/libstdc++.so.6.0.18", "/opt/puppetlabs/puppet/lib/libstdc++.so"
+      pkg.link "/opt/puppetlabs/puppet/lib/libstdc++.so.6.0.18", "/opt/puppetlabs/puppet/lib/libstdc++.so.6"
+      pkg.link "/opt/puppetlabs/puppet/lib/libgcc_s.so.1", "/opt/puppetlabs/puppet/lib/libgcc_s.so"
+      pkg.link "/opt/puppetlabs/puppet/lib/libssp.so.0.0.0", "/opt/puppetlabs/puppet/lib/libssp.so.0"
+      pkg.link "/opt/puppetlabs/puppet/lib/libssp.so.0.0.0", "/opt/puppetlabs/puppet/lib/libssp.so"
+    end
   end
 end
