@@ -3,12 +3,12 @@ platform "solaris-10-sparc" do |plat|
   plat.defaultdir "/lib/svc/method"
   plat.servicetype "smf"
   plat.cross_compiled true
-  plat.vmpooler_template "solaris-10-x86_64"
+  plat.vmpooler_template "solaris-10-u8-x86_64"
   plat.tar "/usr/sfw/bin/gtar"
   plat.patch "/usr/bin/gpatch"
   plat.num_cores "/usr/bin/kstat cpu_info | /opt/csw/bin/ggrep -E '[[:space:]]+core_id[[:space:]]' | wc -l"
 
-  base_pkgs = ['arc', 'gnu-idn', 'gpch', 'gtar', 'hea', 'libm', 'wgetu', 'xcu4']
+  base_pkgs = ['arc', 'gcc', 'gccruntime', 'gccS', 'gnu-idn', 'gpch', 'gtar', 'hea', 'libm', 'wgetu', 'xcu4']
   base_url = 'http://pl-build-tools.delivery.puppetlabs.net/solaris/10/depends'
 
   plat.provision_with %[echo "# Write the noask file to a temporary directory
@@ -40,20 +40,23 @@ action=nocheck
 # Install to the default base directory.
 basedir=default" > /var/tmp/vanagon-noask;
   pkgadd -n -a /var/tmp/vanagon-noask -G -d http://get.opencsw.org/now all;
-  /opt/csw/bin/pkgutil -y -i curl rsync gmake pkgconfig ggrep;
+  /opt/csw/bin/pkgutil -y -i coreutils curl rsync gmake pkgconfig ggrep gsed;
   # RE-6121 openssl 1.0.2e requires functionality not in sytem grep
   ln -sf /opt/csw/bin/ggrep /usr/bin/grep;
   ln -sf /opt/csw/bin/rsync /usr/bin/rsync;
+  ln -sf /opt/csw/bin/curl /usr/bin/curl;
+  ln -sf /opt/csw/bin/greadlink /usr/bin/readlink;
+  ln -sf /opt/csw/bin/gmake /usr/bin/make;
+
   # RE-5250 - Solaris 10 templates are awful
   /opt/csw/bin/pkgutil -l gcc | xargs -I{} pkgrm -n -a /var/tmp/vanagon-noask {};
   /opt/csw/bin/pkgutil -l ruby | xargs -I{} pkgrm -n -a /var/tmp/vanagon-noask {};
   /opt/csw/bin/pkgutil -l readline | xargs -I{} pkgrm -n -a /var/tmp/vanagon-noask {};
 
   # Install base build dependencies
-  for pkg in #{base_pkgs.map { |pkg| "SUNW#{pkg}.pkg.gz" }.join(' ')}; do \
+  for pkg in #{base_pkgs.map { |pkg| "SUNW#{pkg}.pkg.gz" }.join(' ') }; do \
   tmpdir=$(mktemp -p /var/tmp -d); (cd ${tmpdir} && curl -O #{base_url}/${pkg} && gunzip -c ${pkg} | pkgadd -d /dev/stdin -a /var/tmp/vanagon-noask all); \
-  done
-  ntpdate pool.ntp.org]
+  done]
 
   plat.output_dir File.join("solaris", "10", "PC1")
 end
