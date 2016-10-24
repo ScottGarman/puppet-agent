@@ -166,6 +166,8 @@ component "ruby-2.3.1" do |pkg, settings, platform|
     pkg.environment "CC" => "/opt/pl-build-tools/bin/#{settings[:platform_triple]}-gcc"
     pkg.environment "LD" => "/opt/pl-build-tools/bin/#{settings[:platform_triple]}-ld"
     pkg.environment "LDFLAGS" => "-Wl,-rpath=/opt/puppetlabs/puppet/lib"
+    # dtrace must be disabled to prevent segfaults when running miniruby:
+    special_flags += " --disable-dtrace "
   end
 
   if platform.is_windows?
