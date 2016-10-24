@@ -72,7 +72,7 @@ component 'augeas' do |pkg, settings, platform|
     pkg.build_requires 'runtime'
     if platform.os_version == "10"
       pkg.build_requires 'pkgconfig'
-      pkg.environment "PKG_CONFIG_PATH" => "/opt/csw/lib/pkgconfig"
+      pkg.environment "PKG_CONFIG_PATH" => "/opt/puppetlabs/puppet/lib/pkgconfig"
       pkg.environment "PKG_CONFIG" => "/opt/csw/bin/pkg-config"
     else
       pkg.build_requires 'pl-pkg-config'
