@@ -164,6 +164,7 @@ component "ruby-2.3.1" do |pkg, settings, platform|
     pkg.build_requires 'runtime'
     pkg.environment "PATH" => "#{settings[:bindir]}:/usr/ccs/bin:/usr/sfw/bin:$$PATH:/opt/csw/bin"
     pkg.environment "CC" => "/opt/pl-build-tools/bin/#{settings[:platform_triple]}-gcc"
+    pkg.environment "LD" => "/opt/pl-build-tools/bin/#{settings[:platform_triple]}-ld"
     pkg.environment "LDFLAGS" => "-Wl,-rpath=/opt/puppetlabs/puppet/lib"
   end
 
