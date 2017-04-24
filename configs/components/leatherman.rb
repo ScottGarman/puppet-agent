@@ -86,6 +86,12 @@ component "leatherman" do |pkg, settings, platform|
     end
   end
 
+  if platform.is_linux?
+    # Needed to ensure our gettext binaries from pl-gettext are used
+    # instead of system versions
+    pkg.environment "PATH" => "/opt/pl-build-tools/bin:$$PATH"
+  end
+
   pkg.configure do
     ["#{cmake} \
         #{toolchain} \
