@@ -158,6 +158,8 @@ component "facter" do |pkg, settings, platform|
   aio_agent_version = settings[:package_version].match(/^\d+\.\d+\.\d+(\.\d+){0,2}/).to_s
 
   unless platform.is_windows?
+    libruby_so_confirmation = "$(shell #{ruby} -e 'print RbConfig::CONFIG[\"LIBRUBY_SO\"]')"
+    puts "********************** LIBRUBY_SO is set to: [#{libruby_so_confirmation}]] **************************"
     special_flags += " -DFACTER_PATH=#{settings[:bindir]} \
                        -DFACTER_RUBY=#{settings[:libdir]}/$(shell #{ruby} -e 'print RbConfig::CONFIG[\"LIBRUBY_SO\"]') \
                        -DRUBY_LIB_INSTALL=#{settings[:ruby_vendordir]}"
